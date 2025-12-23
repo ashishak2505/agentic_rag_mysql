@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+aiomysql
+requests
+streamlit
+openai
