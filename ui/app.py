@@ -1,30 +1,21 @@
-import streamlit as st
-import requests
+from fastapi import FastAPI
+from pydantic import BaseModel
 
-st.title("Federal Register RAG Agent")
+from pipeline.run_pipeline import run_pipeline  # reuse existing logic
 
-query = st.text_input("Ask about federal documents")
+app = FastAPI(title="Federal Register RAG API")
 
-if query:
-    try:
-        res = requests.post(
-            "http://127.0.0.1:8000/chat",
-            json={"query": query},
-            timeout=30
-        )
 
-        # ✅ Always show status
-        st.caption(f"HTTP {res.status_code}")
+class ChatRequest(BaseModel):
+    query: str
 
-        # ✅ Check content type FIRST
-        content_type = res.headers.get("content-type", "")
 
-        if "application/json" in content_type:
-            data = res.json()
-            st.success(data.get("response", "No response field"))
-        else:
-            st.error("Backend did not return JSON")
-            st.code(res.text)
+@app.get("/")
+def health_check():
+    return {"status": "ok"}
 
-    except requests.exceptions.RequestException as e:
-        st.error(f"Request failed: {e}")
+
+@app.post("/chat")
+def chat_endpoint(request: ChatRequest):
+    answer = run_pipeline(request.query)
+    return {"response": answer}
