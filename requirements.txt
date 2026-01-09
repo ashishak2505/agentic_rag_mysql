@@ -1,6 +1,5 @@
 fastapi
 uvicorn
 aiomysql
-requests
-streamlit
+pydantic
 openai
