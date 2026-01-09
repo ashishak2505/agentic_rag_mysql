@@ -8,7 +8,7 @@ query = st.text_input("Ask about federal documents")
 if query:
     try:
         res = requests.post(
-            "http://127.0.0.1:8001/chat",
+            "http://127.0.0.1:8000/chat",
             json={"query": query},
             timeout=30
         )
